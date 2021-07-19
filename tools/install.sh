@@ -114,7 +114,8 @@ setup_ohmyzsh() {
     -c fsck.zeroPaddedFilemode=ignore \
     -c fetch.fsck.zeroPaddedFilemode=ignore \
     -c receive.fsck.zeroPaddedFilemode=ignore \
-    --depth=1 --branch "$BRANCH" "$REMOTE" "$ZSH" || {
+    "$REMOTE" "$ZSH" && \
+    pushd $ZSH && git checkout $BRANCH && popd || {
     fmt_error "git clone of oh-my-zsh repo failed"
     exit 1
   }
@@ -152,6 +153,8 @@ setup_zshrc() {
     mv ~/.zshrc "$OLD_ZSHRC"
   fi
 
+  ln -s ${ZSH}/dotfiles/.zshrc ~/.zshrc
+  return
   echo "${GREEN}Using the Oh My Zsh template file and adding it to ~/.zshrc.${RESET}"
 
   sed "/^export ZSH=/ c\\
@@ -241,6 +244,17 @@ EOF
   echo
 }
 
+dl_custom_plugins() {
+  git clone https://github.com/zdharma/fast-syntax-highlighting.git \
+    ${ZSH}/custom/plugins/fast-syntax-highlighting
+
+  git clone https://github.com/ghasemnaddaf/zsh-git-prompt --branch plugin \
+    ${ZSH}/custom/plugins/zsh-git-prompt
+
+  git clone https://github.com/superbrothers/zsh-kubectl-prompt.git \
+    ${ZSH}/custom/plugins/zsh-kubectl-prompt
+}
+
 main() {
   # Run as unattended if stdin is not a tty
   if [ ! -t 0 ]; then
@@ -290,14 +304,16 @@ EOF
   setup_ohmyzsh
   setup_zshrc
   setup_shell
+  dl_custom_plugins
 
   printf %s "$GREEN"
   cat <<'EOF'
-         __                                     __
-  ____  / /_     ____ ___  __  __   ____  _____/ /_
- / __ \/ __ \   / __ `__ \/ / / /  /_  / / ___/ __ \
-/ /_/ / / / /  / / / / / / /_/ /    / /_(__  ) / / /
-\____/_/ /_/  /_/ /_/ /_/\__, /    /___/____/_/ /_/
+  
+            ___________________***_____________________
+        ____  / /_     ____ ___  __  __   ____  _____/ /_
+---    / __ \/ __ \   / __ `__ \/ / / /  /_  / / ___/ __ \ ---
+---   / /_/ / / / /  / / / / / / /_/ /    / /_(__  ) / / / ---
+      \____/_/ /_/  /_/ /_/ /_/\__, /    /___/____/_/ /_/
                         /____/                       ....is now installed!
 
 

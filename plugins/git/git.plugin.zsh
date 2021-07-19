@@ -80,14 +80,17 @@ alias gcan!='git commit -v -a --no-edit --amend'
 alias gcans!='git commit -v -a -s --no-edit --amend'
 alias gcam='git commit -a -m'
 alias gcsm='git commit -s -m'
+alias gck='git checkout'
 alias gcas='git commit -a -s'
 alias gcasm='git commit -a -s -m'
 alias gcb='git checkout -b'
+alias gckb='git checkout -b'
 alias gcf='git config --list'
 alias gcl='git clone --recurse-submodules'
-alias gclean='git clean -id'
-alias gpristine='git reset --hard && git clean -dffx'
-alias gcm='git checkout $(git_main_branch)'
+alias gclean='git clean -fd'
+alias gpristine='git reset --hard && git clean -dfx'
+alias gcm='git checkout master'
+alias gckm='git checkout $(git_main_branch)'
 alias gcd='git checkout develop'
 alias gcmsg='git commit -m'
 alias gco='git checkout'
@@ -96,6 +99,7 @@ alias gcp='git cherry-pick'
 alias gcpa='git cherry-pick --abort'
 alias gcpc='git cherry-pick --continue'
 alias gcs='git commit -S'
+compdef _git gck=git-checkout
 
 alias gd='git diff'
 alias gdca='git diff --cached'
@@ -114,15 +118,18 @@ function gdv() { git diff -w "$@" | view - }
 compdef _git gdv=git-diff
 
 alias gf='git fetch'
+alias gfp='git fetch --prune'
 # --jobs=<n> was added in git 2.8
 is-at-least 2.8 "$git_version" \
   && alias gfa='git fetch --all --prune --jobs=10' \
   || alias gfa='git fetch --all --prune'
+alias gfpa='gfa'
+
 alias gfo='git fetch origin'
 
 alias gfg='git ls-files | grep'
 
-alias gg='git gui citool'
+alias gg='git gui citool &'
 alias gga='git gui citool --amend'
 
 function ggf() {
@@ -187,7 +194,10 @@ alias git-svn-dcommit-push='git svn dcommit && git push github $(git_main_branch
 alias gk='\gitk --all --branches'
 alias gke='\gitk --all $(git log -g --pretty=%h)'
 
+alias gp='git pull'
 alias gl='git pull'
+alias glt='git pull --tags'
+
 alias glg='git log --stat'
 alias glgp='git log --stat -p'
 alias glgg='git log --graph'
@@ -203,6 +213,14 @@ alias glog='git log --oneline --decorate --graph'
 alias gloga='git log --oneline --decorate --graph --all'
 alias glp="_git_log_prettily"
 
+alias glpn='git --no-pager log --pretty=oneline -n'
+alias g1='git --no-pager log --pretty=oneline -n 1'
+alias g3='git --no-pager log --pretty=oneline -n 3'
+alias glpn5='git --no-pager log --pretty=oneline -n 5'
+alias g5='glpn5'
+alias g8='git --no-pager log --pretty=oneline -n 8'
+compdef _git glp=git-log
+
 alias gm='git merge'
 alias gmom='git merge origin/$(git_main_branch)'
 alias gmt='git mergetool --no-prompt'
@@ -210,13 +228,25 @@ alias gmtvim='git mergetool --no-prompt --tool=vimdiff'
 alias gmum='git merge upstream/$(git_main_branch)'
 alias gma='git merge --abort'
 
-alias gp='git push'
-alias gpd='git push --dry-run'
-alias gpf='git push --force-with-lease'
-alias gpf!='git push --force'
-alias gpoat='git push origin --all && git push origin --tags'
-alias gpu='git push upstream'
-alias gpv='git push -v'
+alias gps='git push'
+alias gpsd='git push --dry-run'
+alias gpsdr='git push --dry-run'
+alias gpsoat='git push origin --all && git push origin --tags'
+
+# compdef _git gpsoat=git-push
+alias gbr='git rev-parse --abbrev-ref HEAD'
+alias gpsu='git push -u origin $(gbr)'
+alias gpsup='git push upstream'
+alias gpsv='git push -v'
+alias gpsfff='git push --force'
+
+#alias gp='git push'
+#alias gpd='git push --dry-run'
+#alias gpf='git push --force-with-lease'
+#alias gpf!='git push --force'
+#alias gpoat='git push origin --all && git push origin --tags'
+#alias gpu='git push upstream'
+#alias gpv='git push -v'
 
 alias gr='git remote'
 alias gra='git remote add'
@@ -262,7 +292,7 @@ is-at-least 2.13 "$git_version" \
 alias gstaa='git stash apply'
 alias gstc='git stash clear'
 alias gstd='git stash drop'
-alias gstl='git stash list'
+alias gstl='git --no-pager stash list'
 alias gstp='git stash pop'
 alias gsts='git stash show --text'
 alias gstu='gsta --include-untracked'
